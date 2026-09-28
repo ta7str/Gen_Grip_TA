@@ -1,0 +1,19 @@
+{
+  "name": "finger-mod",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Parametric printable gripper fingers for the SO-101, with STL and STEP export. Runs entirely in the browser.",
+  "scripts": {
+    "build": "node build.mjs",
+    "serve": "npx --yes serve -l 8080 ."
+  },
+  "dependencies": {
+    "replicad": "1.1.0",
+    "replicad-opencascadejs": "1.1.0",
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finger Mod</title>
+<meta name="description" content="SO-101 用グリッパーフィンガーをブラウザ上で設計し、STEP と STL で書き出します。">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path fill='%2334e7e4' fill-rule='evenodd' d='M12.68 6.36L12.99 1.82L19.01 1.82L19.32 6.36L20.47 6.83L23.90 3.84L28.16 8.10L25.17 11.53L25.64 12.68L30.18 12.99L30.18 19.01L25.64 19.32L25.17 20.47L28.16 23.90L23.90 28.16L20.47 25.17L19.32 25.64L19.01 30.18L12.99 30.18L12.68 25.64L11.53 25.17L8.10 28.16L3.84 23.90L6.83 20.47L6.36 19.32L1.82 19.01L1.82 12.99L6.36 12.68L6.83 11.53L3.84 8.10L8.10 3.84L11.53 6.83Z M16 10.6a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 1 0 0-10.8Z'/></svg>">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">Finger&nbsp;Mod</div>
+  <div class="tagline" data-t="tagline"></div>
+  <div class="spacer"></div>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+  <div class="seg" id="langSeg" aria-label="Language">
+    <button data-lang="ja">日本語</button>
+    <button data-lang="en">EN</button>
+  </div>
+</header>
+
+<main class="grid">
+
+  <section class="stage">
+    <div class="stagebar">
+      <span class="dims" id="dims"></span>
+      <div class="spacer"></div>
+      <div class="seg" id="viewSeg">
+        <button data-v="iso" class="on" data-t="view_iso"></button>
+        <button data-v="front" data-t="view_front"></button>
+        <button data-v="side" data-t="view_side"></button>
+        <button data-v="top" data-t="view_top"></button>
+      </div>
+    </div>
+    <div class="canvaswrap" id="canvasWrap">
+      <canvas id="cv" aria-label="3D preview"></canvas>
+      <div class="hint" data-t="hint"></div>
+    </div>
+  </section>
+
+  <aside class="panel left" id="controls">
+    <section class="block">
+      <h2 data-t="templates"></h2>
+      <div class="templates" id="templates"></div>
+      <p class="tpl-blurb" id="templateBlurb"></p>
+    </section>
+
+    <section class="block">
+      <label class="switch">
+        <input type="checkbox" id="symChk" checked>
+        <span class="track"><span class="knob"></span></span>
+        <span class="switch-txt" data-t="symmetric"></span>
+      </label>
+      <div class="tabs" id="fingerTabs" hidden></div>
+    </section>
+
+    <div id="sliders"></div>
+  </aside>
+
+  <aside class="panel right">
+    <section class="block">
+      <h2 data-t="summary"></h2>
+      <dl class="facts" id="summary"></dl>
+      <ul class="warns" id="warns"></ul>
+    </section>
+
+    <section class="block">
+      <h2 data-t="export"></h2>
+      <div id="exports"></div>
+      <div class="fmtnote">
+        <p><b data-t="export_step_h"></b> <span data-t="export_step"></span></p>
+        <p><b data-t="export_stl_h"></b> <span data-t="export_stl"></span></p>
+      </div>
+    </section>
+
+    <section class="block howto">
+      <h2 data-t="howto"></h2>
+      <div class="step">
+        <b class="step-h" data-t="howto_fingers_h"></b>
+        <p data-t="howto_fingers"></p>
+      </div>
+      <div class="step">
+        <b class="step-h" data-t="howto_mount_h"></b>
+        <p data-t="howto_mount"></p>
+        <a class="dl ext"
+           href="https://github.com/Vector-Wangel/XLeRobot/blob/main/hardware/SO101_soft_fin.stl"
+           target="_blank" rel="noopener">
+          <span>SO101_soft_fin.stl</span><em>XLeRobot ↗</em>
+        </a>
+        <p class="credit" data-t="howto_mount_credit"></p>
+      </div>
+      <p class="engine" data-t="engine"></p>
+    </section>
+  </aside>
+
+</main>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

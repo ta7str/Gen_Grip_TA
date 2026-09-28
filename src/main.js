@@ -358,7 +358,7 @@ const MIME = { step: "model/step", stl: "model/stl" };
 
 function fileName(slotIdx, format) {
   const tag = state.sym ? "" : slotIdx ? "-B" : "-A";
-  return `finger-mod${tag}.${format}`;
+  return `gen-grip${tag}.${format}`;
 }
 
 function renderExports() {

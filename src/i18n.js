@@ -44,7 +44,7 @@ export const STR = {
     howto_fingers: "上のSTLをTPU 95Aで印刷します。左右対称なら、同じファイルを2回印刷してください。",
     howto_mount_h: "2. マウント",
     howto_mount: "PLAで印刷します。マウントはこのページでは作れません。XLeRobot のパーツなので、下のリンクから入手してください。",
-    howto_mount_credit: "マウントは XLeRobot（Vector-Wangel）のものです。Finger Mod が作るのは指だけです。",
+    howto_mount_credit: "マウントは XLeRobot（Vector-Wangel）のものです。Gen Grip が作るのは指だけです。",
     engine: "形状は OpenCascade で生成し、すべてブラウザ内で処理します。データは送信されません。",
   },
   en: {
@@ -92,7 +92,7 @@ export const STR = {
     howto_fingers: "Print the STL above in TPU 95A. A symmetrical design is one file printed twice.",
     howto_mount_h: "2. Mount",
     howto_mount: "Print in PLA. The mount is not made on this page. It is XLeRobot's part, and you download it from them:",
-    howto_mount_credit: "Mount by XLeRobot (Vector-Wangel). Finger Mod makes the fingers only.",
+    howto_mount_credit: "Mount by XLeRobot (Vector-Wangel). Gen Grip makes the fingers only.",
     engine: "Shapes are built with OpenCascade, entirely in your browser. Nothing is uploaded.",
   },
 };

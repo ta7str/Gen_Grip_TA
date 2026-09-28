@@ -1,4 +1,4 @@
-# Finger Mod
+# Gen Grip (TA-v2.0)
 
 SO-101 用のグリッパーフィンガーをブラウザで設計し、**STEP** と **STL** で書き出す静的Webアプリです。
 サーバーは不要で、GitHub Pages だけで動きます。形状は OpenCascade（WebAssembly）で生成するため、

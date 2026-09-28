@@ -105,7 +105,7 @@ const grid = new THREE.GridHelper(240, 24, 0x2c474d, 0x1a2b30);
 grid.rotation.x = Math.PI / 2;                // lay the grid in the XY plane
 scene.add(grid);
 
-const material = new THREE.MeshStandardMaterial({ color: 0x35d6d2, roughness: 0.62, metalness: 0.04 });
+const material = new THREE.MeshStandardMaterial({ color: 0x0090c4, roughness: 0.62, metalness: 0.04 });
 const edgeMat = new THREE.LineBasicMaterial({ color: 0x06282a, transparent: true, opacity: 0.75 });
 let mesh = null, edges = null, hasFit = false;
 const center = new THREE.Vector3();

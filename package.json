@@ -1,9 +1,9 @@
 {
-  "name": "finger-mod",
+  "name": "gripper-mod-TA-v2.0",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Parametric printable gripper fingers for the SO-101, with STL and STEP export. Runs entirely in the browser.",
+  "description": "Parametric printable gripper fingers for KIT-AURORA, with STL and STEP export. Runs entirely in the browser.",
   "scripts": {
     "build": "node build.mjs",
     "serve": "npx --yes serve -l 8080 ."

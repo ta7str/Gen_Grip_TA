@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { PARAM_DEFS, TEMPLATES } from "./params.js";
+import { PARAM_DEFS, TEMPLATES, skinArc, arcPt } from "./params.js";
 import { STR } from "./i18n.js";
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -206,11 +206,16 @@ function buildTemplates() {
 
 // A tiny side-view silhouette so each template is recognisable at a glance.
 function profileIcon(p) {
-  const s = 0.4, k = 2.4, ox = 20, base = 42;   // 0.4 px per mm along the length; thickness exaggerated 2.4x
+  const fin = p.structure === "finray";
+  const s = 0.4, k = fin ? 1.1 : 2.4, ox = 20, base = 42;   // px per mm along the length; thickness exaggerated for thin solids
   const pts = [[0, 0]];
-  if (p.hook > 0) pts.push([0, p.length - p.hookLength], [p.hook, p.length - p.hookLength * 0.55], [p.hook, p.length]);
-  else pts.push([0, p.length]);
-  pts.push([-p.tipThickness, p.length], [-p.baseThickness, 0]);
+  if (p.hook > 0.05) pts.push([0, p.length - p.hookLength], [p.hook, fin ? p.length - p.hookLength : p.length - p.hookLength * 0.55]);
+  pts.push([0, p.length], [-p.tipThickness, p.length]);
+  if (fin) {
+    const a = skinArc(p);
+    for (let i = 1; i <= 10; i++) pts.push(arcPt(a, a.R, a.alpha * (1 - i / 10)));
+  } else pts.push([-p.baseThickness, 0]);
+  if (fin) pts.push([-p.baseThickness, 0]);
   const d = pts.map(([x, z]) => `${(ox + x * s * k).toFixed(1)},${(base - z * s).toFixed(1)}`).join(" ");
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 32 44"); svg.setAttribute("aria-hidden", "true");
@@ -224,7 +229,7 @@ function applyTemplate(id) {
   state.fingers[slot()] = { ...TEMPLATES[id] };
   if (state.sym) state.fingers[1] = { ...TEMPLATES[id] };
   state.tpl = id;
-  syncSliders();
+  buildSliders();
   buildTemplates();
   scheduleBuild(0);
 }
@@ -232,8 +237,25 @@ function applyTemplate(id) {
 function buildSliders() {
   const host = $("#sliders");
   host.innerHTML = "";
+  const sec0 = el("section", "block");
+  sec0.append(el("h2", null, t("g_structure")));
+  const seg = el("div", "seg wide");
+  for (const v of ["solid", "finray"]) {
+    const b = el("button", cur().structure === v ? "on" : "", t("struct_" + v));
+    b.type = "button";
+    b.addEventListener("click", () => {
+      if (cur().structure === v) return;
+      cur().structure = v;
+      if (state.sym) state.fingers[1].structure = v;
+      state.tpl = null; buildTemplates(); buildSliders(); scheduleBuild(0);
+    });
+    seg.append(b);
+  }
+  sec0.append(seg);
+  host.append(sec0);
+
   let group = null, sec = null;
-  for (const d of PARAM_DEFS) {
+  for (const d of PARAM_DEFS.filter((x) => !x.only || x.only === cur().structure)) {
     if (d.group !== group) {
       group = d.group;
       sec = el("section", "block");
@@ -293,7 +315,7 @@ function buildTabs() {
     b.type = "button";
     b.addEventListener("click", () => {
       state.active = i; state.tpl = null;
-      buildTabs(); buildTemplates(); syncSliders(); renderExports(); scheduleBuild(0);
+      buildTabs(); buildTemplates(); buildSliders(); renderExports(); scheduleBuild(0);
     });
     host.append(b);
   });
@@ -302,7 +324,7 @@ function buildTabs() {
 $("#symChk").addEventListener("change", (e) => {
   state.sym = e.target.checked;
   if (state.sym) { state.active = 0; state.fingers[1] = { ...state.fingers[0] }; }
-  buildTabs(); syncSliders(); renderExports(); scheduleBuild(0);
+  buildTabs(); buildSliders(); renderExports(); scheduleBuild(0);
 });
 
 /* ---------------------------------------------------------- summary panel */
@@ -325,9 +347,10 @@ function renderSummary() {
   $("#dims").textContent = `${sy.toFixed(1)} × ${sx.toFixed(1)} × ${sz.toFixed(1)} mm`;
 
   const n = lastStats.notes, p = cur();
-  if (n.radius < p.cornerRadius - 1e-6) warns.append(el("li", null, t("warn_radius")));
+  if (p.structure !== "finray" && n.radius < p.cornerRadius - 1e-6) warns.append(el("li", null, t("warn_radius")));
   if (!n.ribsFit) warns.append(el("li", null, t("warn_ribs")));
   if (!n.holesFit) warns.append(el("li", null, t("warn_holes")));
+  if (n.mountFit === false) warns.append(el("li", null, t("warn_mount")));
 }
 
 /* ---------------------------------------------------------------- export */

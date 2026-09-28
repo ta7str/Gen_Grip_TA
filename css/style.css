@@ -44,6 +44,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .seg button { background: transparent; border: 0; padding: 4px 12px; font-size: 12.5px; color: var(--dim); }
 .seg button + button { border-left: 1px solid var(--line-strong); }
 .seg button:hover { color: var(--text); }
+.seg.wide { display: flex; }
+.seg.wide button { flex: 1; padding: 6px 12px; }
 .seg button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 
 /* ---------- layout */
@@ -69,7 +71,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .hint { position: absolute; left: 16px; bottom: 12px; font-size: 12px; color: var(--dim); pointer-events: none; }
 
 /* ---------- templates */
-.templates { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.templates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .tpl {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   padding: 8px 2px 6px; background: transparent; border: 1px solid var(--line-strong); border-radius: var(--r);

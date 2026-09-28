@@ -6,7 +6,7 @@
 //                    X = 0 is the gripping face (the object sits at +X),
 //                    the body grows toward -X, Y is the finger width.
 import { draw, makeCylinder } from "replicad";
-import { sanitize, effectiveRadius } from "./params.js";
+import { sanitize, effectiveRadius, skinArc, arcPt } from "./params.js";
 
 function profile(p) {
   const { length: L, baseThickness: tb, tipThickness: tt, hook, hookLength: hl } = p;
@@ -21,6 +21,7 @@ function profile(p) {
 
 export function buildFinger(input) {
   const p = sanitize(input);
+  if (p.structure === "finray") return buildFinRay(p);
   const { width: W, length: L } = p;
 
   // 1. side profile, extruded across the width and centred on Y = 0
@@ -72,5 +73,59 @@ export function buildFinger(input) {
     body = body.cut(hole);
   }
 
+  return body;
+}
+
+
+// Fin Ray finger: straight spine (the gripping face), a thin curved skin, and
+// slanted webs between them. The side profile is cut through the full width.
+function buildFinRay(p) {
+  const { length: L, width: W, baseThickness: tb, tipThickness: tt, hook, hookLength: hl } = p;
+  const st = p.skinThickness, sp = p.spineThickness, N = p.webCount;
+  const a = skinArc(p);
+  const centre = (shape) => shape.translate([0, -shape.boundingBox.center[1], 0]);
+  const extrudeSide = (pen, depth) => centre(pen.sketchOnPlane("XZ").extrude(depth));
+
+  // 1. outer envelope: spine face, barb at the tip, skin arc, mount end
+  const env = draw([0, 0]);
+  if (hook > 0.05) env.lineTo([0, L - hl]).lineTo([hook, L - hl]);
+  const envelope = env.lineTo([0, L]).lineTo([-tt, L])
+     .threePointsArcTo(arcPt(a, a.R, 0), arcPt(a, a.R, a.alpha / 2))
+     .lineTo([-tb, 0]).close();
+  let body = extrudeSide(envelope, W);
+
+  // 2. hollow region between spine and skin, from the mount block to where
+  //    the inner skin meets the spine
+  const ri = a.R - st;
+  const thC = Math.min(Math.acos(Math.min(1, (a.cx + sp) / ri)), a.alpha * 0.995);
+  const pB = arcPt(a, ri, thC);
+  const zc = pB[1];
+  const void2d = draw([-sp, a.cz]).lineTo([-sp, pB[1]]);
+  if (Math.abs(pB[0] + sp) > 1e-6) void2d.lineTo(pB);
+  const voidShape = void2d.threePointsArcTo(arcPt(a, ri, 0), arcPt(a, ri, thC / 2)).close();
+  let cavity = extrudeSide(voidShape, W + 4);
+
+  // 3. webs stay behind: subtract them from the hollow before cutting it
+  const half = p.webThickness / 2, reach = tb + 6;
+  for (let i = 0; i < N; i++) {
+    const z = a.cz + ((i + 1) * (zc - a.cz)) / (N + 1);
+    const phi = ((N > 1 ? i / (N - 1) : 0) * p.webSlant * Math.PI) / 180;
+    const u = [-Math.cos(phi), Math.sin(phi)];       // from spine toward skin, leaning to the tip
+    const n = [Math.sin(phi), Math.cos(phi)];
+    const s0 = [-sp - u[0] * 1, z - u[1] * 1];
+    const s1 = [-sp + u[0] * reach, z + u[1] * reach];
+    const web = draw([s0[0] + n[0] * half, s0[1] + n[1] * half])
+      .lineTo([s1[0] + n[0] * half, s1[1] + n[1] * half])
+      .lineTo([s1[0] - n[0] * half, s1[1] - n[1] * half])
+      .lineTo([s0[0] - n[0] * half, s0[1] - n[1] * half]).close();
+    cavity = cavity.cut(extrudeSide(web, W + 8));
+  }
+  body = body.cut(cavity);
+
+  // 4. mount holes: across the thickness of the block, through the width
+  for (let i = 0; i < p.holeCount; i++) {
+    const x = -tb / 2 + (i - (p.holeCount - 1) / 2) * p.holeSpacing;
+    body = body.cut(makeCylinder(p.holeDia / 2, W + 4, [x, -W / 2 - 2, p.mountLength / 2], [0, 1, 0]));
+  }
   return body;
 }
